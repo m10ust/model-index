@@ -47,18 +47,19 @@
       <div class="controls" aria-label="Chart controls">
         <div class="segmented" role="group" aria-label="View">
           <button class="selected" type="button" data-view="bars">Ranked</button>
+          <button type="button" data-view="value">Value</button>
           <button type="button" data-view="dots">Compare</button>
         </div>
         <button class="sort-button" id="sort-button" type="button">Score ↓</button>
       </div>
 
       <div class="chart-shell">
-        <div class="scale" aria-hidden="true">
+        <div class="scale" id="scale" aria-hidden="true">
           <span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span>
         </div>
         <div id="chart" class="chart" role="list" aria-label="Model intelligence scores"></div>
       </div>
-      <p class="chart-hint">Select any model to inspect its benchmark receipt.</p>
+      <p class="chart-hint" id="chart-hint">Select any model to inspect its benchmark receipt.</p>
     </section>
 
     <section class="insight-strip" aria-label="Key insights">
@@ -83,6 +84,7 @@
       </div>
       <div class="method-copy">
         <p>The displayed Fleet Score uses exactly five independently run evaluations: Terminal-Bench 4.0, SciCode, Humanity’s Last Exam, CritPt and AA-LCR.</p>
+        <p>The Value view answers a different question: how much measured capability a dollar buys. It divides the fleet score by the blended price per million tokens, using Artificial Analysis's 7:2:1 cache-hit, input and output ratio. The cache-hit rate is listed separately in every receipt, because cache-heavy agent workloads are billed mostly at that rate.</p>
         <p>The basket was revised in September 2026. Artificial Analysis retired Terminal-Bench 2.1 and removed GPQA Diamond from its suite, so both stop being measured for any newly released model. Terminal-Bench 4.0 and CritPt take their places; the revision and the reason are recorded in the dataset.</p>
         <p>Every raw result is a proportion. It is normalized to 0–100 by multiplying by 100, then the five normalized results receive equal 20% weight. Missing one benchmark means no aggregate is published.</p>
         <p>The versioned snapshot lives in <code>data/benchmarks.json</code>. Updates are deliberate and reviewable; the dashboard never silently pulls new values.</p>

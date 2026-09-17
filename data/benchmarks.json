@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "datasetVersion": "2026-09-16.2",
+  "datasetVersion": "2026-09-16.3",
   "retrievedAt": "2026-09-16",
   "method": {
     "name": "M4Y0U Fleet Score v2",
@@ -38,7 +38,8 @@
         ],
         "equalWeight": "The five axes are unchanged in intent: agentic coding, scientific coding, reasoning and knowledge, physics reasoning, long-context reasoning. GPQA Diamond's slot is taken by CritPt."
       }
-    }
+    },
+    "costAxis": "Value is the fleet score divided by the blended price per million tokens, so it answers a different question than capability: how much measured capability a dollar buys. The blended figure is Artificial Analysis's 7:2:1 cache-hit/input/output ratio, and the cache-hit price is listed separately because cache-heavy agent workloads are billed mostly at that rate."
   },
   "benchmarks": {
     "terminalbench-v4.0": {
@@ -109,6 +110,16 @@
         "hle": 0.494902687673772,
         "critpt": 0.322857142857143,
         "aa-lcr": 0.84
+      },
+      "pricing": {
+        "input": 4.0,
+        "output": 20.0,
+        "blended7To2To1": 3.08,
+        "cacheHit": 0.4,
+        "currency": "USD",
+        "unit": "per 1M tokens",
+        "blend": "7 cache-hit : 2 input : 1 output, as published by Artificial Analysis",
+        "source": "https://artificialanalysis.ai/models/gpt-5-6-sol"
       }
     },
     {
@@ -128,6 +139,16 @@
         "hle": 0.422613531047266,
         "critpt": 0.191428571428571,
         "aa-lcr": 0.796666666666667
+      },
+      "pricing": {
+        "input": 1.4,
+        "output": 4.4,
+        "blended7To2To1": 0.9019999999999999,
+        "cacheHit": 0.26,
+        "currency": "USD",
+        "unit": "per 1M tokens",
+        "blend": "7 cache-hit : 2 input : 1 output, as published by Artificial Analysis",
+        "source": "https://artificialanalysis.ai/models/glm-5-3"
       }
     },
     {
@@ -147,6 +168,16 @@
         "hle": 0.468952734012975,
         "critpt": 0.234285714285714,
         "aa-lcr": 0.886666666666667
+      },
+      "pricing": {
+        "input": 3.0,
+        "output": 15.0,
+        "blended7To2To1": 2.31,
+        "cacheHit": 0.3,
+        "currency": "USD",
+        "unit": "per 1M tokens",
+        "blend": "7 cache-hit : 2 input : 1 output, as published by Artificial Analysis",
+        "source": "https://artificialanalysis.ai/models/kimi-k3"
       }
     },
     {
@@ -166,6 +197,16 @@
         "hle": 0.392493049119555,
         "critpt": 0.142857142857143,
         "aa-lcr": 0.84
+      },
+      "pricing": {
+        "input": 0.3,
+        "output": 1.2,
+        "blended7To2To1": 0.1842,
+        "cacheHit": 0.006,
+        "currency": "USD",
+        "unit": "per 1M tokens",
+        "blend": "7 cache-hit : 2 input : 1 output, as published by Artificial Analysis",
+        "source": "https://artificialanalysis.ai/models/deepseek-v4-1-flash"
       }
     }
   ]

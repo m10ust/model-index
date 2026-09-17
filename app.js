@@ -4,6 +4,7 @@ const dialog = document.querySelector("#model-dialog");
 let dataset;
 let models = [];
 let descending = true;
+let view = "bars";
 
 const round = (value, places = 1) => Number(value.toFixed(places));
 
@@ -27,27 +28,59 @@ function measuredCount(model) {
   return dataset.method.benchmarkIds.filter((id) => typeof model.scores[id] === "number").length;
 }
 
+// Cost axis. Capability per dollar is a different question from capability, and
+// the one this fleet actually answers with: the blended rate is Artificial
+// Analysis's 7:2:1 cache-hit/input/output ratio, and value is score per $/M.
+const money = (value) => `$${value.toFixed(2)}`;
+
+function blended(model) {
+  const price = model.pricing && model.pricing.blended7To2To1;
+  return typeof price === "number" && price > 0 ? price : null;
+}
+
+function valueOf(model) {
+  const price = blended(model);
+  if (price === null || typeof model.score !== "number") return null;
+  return model.score / price;
+}
+
 function render() {
   // Ranked first. A model whose basket cannot be completed is still shown, with
   // its score withheld rather than the whole page refused: the method says the
   // aggregate is withheld when a value is missing, and until now the code threw
   // instead of doing that.
+  const byValue = view === "value";
   const ranked = models.filter((model) => typeof model.score === "number");
   const unranked = models.filter((model) => typeof model.score !== "number");
+  const priced = ranked.filter((model) => !byValue || valueOf(model) !== null);
+  const unpriced = ranked.filter((model) => byValue && valueOf(model) === null);
+  const order = byValue
+    ? (a, b) => (descending ? valueOf(b) - valueOf(a) : valueOf(a) - valueOf(b))
+    : (a, b) => (descending ? b.score - a.score : a.score - b.score);
   const ordered = [
-    ...ranked.sort((a, b) => descending ? b.score - a.score : a.score - b.score),
+    ...priced.sort(order),
+    ...unpriced,
     ...unranked.sort((a, b) => a.name.localeCompare(b.name)),
   ];
+  const total = dataset.method.benchmarkIds.length;
+  const maxValue = Math.max(1, ...models.map((model) => valueOf(model) || 0));
+
   chart.innerHTML = ordered.map((model, index) => {
     const scored = typeof model.score === "number";
-    const total = dataset.method.benchmarkIds.length;
+    const price = blended(model);
+    const value = valueOf(model);
     const got = measuredCount(model);
-    const rank = scored ? String(ranked.indexOf(model) + 1).padStart(2, "0") : "\u2014";
-    const bar = scored ? `data-width="${model.score}%"` : `data-width="0%"`
+    const rank = scored ? String(index + 1).padStart(2, "0") : "\u2014";
+    const width = byValue
+      ? (value ? (value / maxValue) * 100 : 0)
+      : (scored ? model.score : 0);
+    const bar = `data-width="${width}%"`;
     const score = scored ? model.score.toFixed(1) : "\u2014";
-    const note = scored
-      ? `mean · ${total} evals<br>snapshot ${model.snapshotAt}`
-      : `${got} of ${total} evals<br>not ranked`;
+    const note = !scored
+      ? `${got} of ${total} evals<br>not ranked`
+      : byValue
+        ? `${value ? Math.round(value) + " pts per $" : "no price listed"}<br>${price ? money(price) + "/M blended" : ""}`
+        : `mean · ${total} evals<br>${price ? money(price) + "/M blended" : "price not listed"}`;
     return `
     <div class="chart-row${scored ? "" : " is-unranked"}" style="--model-color:${model.color}" role="listitem" tabindex="0" data-model="${model.id}" aria-label="${model.name}, ${scored ? "fleet score " + model.score : "not ranked"}">
       <div class="model-label">
@@ -59,6 +92,20 @@ function render() {
       <div class="score-wrap"><div class="score">${score}</div><small>${note}</small></div>
     </div>`;
   }).join("");
+
+  // The axis has to mean something in each view, so the scale follows the view.
+  const scale = document.querySelector("#scale");
+  if (scale) {
+    scale.innerHTML = byValue
+      ? [0, 1, 2, 3, 4, 5].map((step) => `<span>${Math.round((maxValue * step) / 5)}</span>`).join("")
+      : [0, 20, 40, 60, 80, 100].map((tick) => `<span>${tick}</span>`).join("");
+  }
+  const hint = document.querySelector("#chart-hint");
+  if (hint) {
+    hint.textContent = byValue
+      ? "Value is the fleet score divided by the blended price per million tokens. Same measurements, priced."
+      : "Select any model to inspect its benchmark receipt.";
+  }
 
   requestAnimationFrame(() => {
     document.querySelectorAll(".bar").forEach((bar) => { bar.style.width = bar.dataset.width; });
@@ -86,6 +133,9 @@ function openModel(id) {
   document.querySelector("#dialog-grid").innerHTML = `
     <div><span>Aggregation</span><strong>Equal mean</strong></div>
     <div><span>Weight / eval</span><strong>20%</strong></div>
+    <div><span>Blended price</span><strong>${blended(model) ? money(blended(model)) + "/M" : "not listed"}</strong></div>
+    <div><span>Cache-hit price</span><strong>${model.pricing && typeof model.pricing.cacheHit === "number" ? money(model.pricing.cacheHit) + "/M" : "not listed"}</strong></div>
+    <div><span>Value</span><strong>${valueOf(model) ? Math.round(valueOf(model)) + " pts/$" : "withheld"}</strong></div>
     <div><span>Snapshot</span><strong>${model.snapshotAt}</strong></div>
   `;
   document.querySelector("#dialog-receipt").innerHTML = `
@@ -111,7 +161,7 @@ function openModel(id) {
     <div class="receipt-total"><span>Arithmetic mean</span><span>${typeof model.score === "number" ? model.score.toFixed(1) : "withheld"}</span></div>
     ${model.unmeasured ? `<p class="receipt-note">${model.unmeasured}</p>` : ""}
   `;
-  document.querySelector("#dialog-note").innerHTML = `Source snapshot: <a href="${model.source}" target="_blank" rel="noreferrer">Artificial Analysis</a>, retrieved ${dataset.retrievedAt}. Formula: Σ(normalized scores × 0.20).`;
+  document.querySelector("#dialog-note").innerHTML = `Source snapshot: <a href="${model.source}" target="_blank" rel="noreferrer">Artificial Analysis</a>, retrieved ${dataset.retrievedAt}. Formula: Σ(normalized scores × 0.20). Prices are Artificial Analysis list rates per 1M tokens, blended 7 cache-hit : 2 input : 1 output, and the cache-hit rate is the one this fleet mostly pays.`;
   dialog.showModal();
 }
 
@@ -126,9 +176,13 @@ chart.addEventListener("keydown", (event) => {
   }
 });
 
+function labelSort() {
+  sortButton.textContent = `${view === "value" ? "Value" : "Score"} ${descending ? "↓" : "↑"}`;
+}
+
 sortButton.addEventListener("click", () => {
   descending = !descending;
-  sortButton.textContent = descending ? "Score ↓" : "Score ↑";
+  labelSort();
   render();
 });
 
@@ -136,7 +190,10 @@ document.querySelectorAll("[data-view]").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll("[data-view]").forEach((item) => item.classList.remove("selected"));
     button.classList.add("selected");
-    chart.classList.toggle("dots", button.dataset.view === "dots");
+    view = button.dataset.view;
+    chart.classList.toggle("dots", view === "dots");
+    labelSort();
+    render();
   });
 });
 
