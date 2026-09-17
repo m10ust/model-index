@@ -148,10 +148,16 @@ dialog.addEventListener("click", (event) => { if (event.target === dialog) dialo
 
 async function initialize() {
   try {
-    const response = await fetch("data/benchmarks.json");
+    // no-store on purpose. A cached dataset next to freshly deployed code is the
+    // worst possible state: the page shows new labels over old numbers and looks
+    // like the update failed. The file is a few KB and only changes when we
+    // commit it, so freshness costs nothing.
+    const response = await fetch("data/benchmarks.json", { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     dataset = await response.json();
     models = dataset.models.map((model) => ({ ...model, ...dataset.providers[model.provider], score: calculateScore(model) }));
+    const stamp = document.querySelector("#dataset-stamp");
+    if (stamp) stamp.textContent = `dataset ${dataset.datasetVersion}`;
     renderSummary();
     render();
   } catch (error) {
