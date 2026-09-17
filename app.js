@@ -23,19 +23,42 @@ function calculateScore(model) {
   return round(values.reduce((sum, value) => sum + value * 100, 0) / values.length);
 }
 
+function measuredCount(model) {
+  return dataset.method.benchmarkIds.filter((id) => typeof model.scores[id] === "number").length;
+}
+
 function render() {
-  const ordered = [...models].sort((a, b) => descending ? b.score - a.score : a.score - b.score);
-  chart.innerHTML = ordered.map((model, index) => `
-    <div class="chart-row" style="--model-color:${model.color}" role="listitem" tabindex="0" data-model="${model.id}" aria-label="${model.name}, fleet score ${model.score}">
+  // Ranked first. A model whose basket cannot be completed is still shown, with
+  // its score withheld rather than the whole page refused: the method says the
+  // aggregate is withheld when a value is missing, and until now the code threw
+  // instead of doing that.
+  const ranked = models.filter((model) => typeof model.score === "number");
+  const unranked = models.filter((model) => typeof model.score !== "number");
+  const ordered = [
+    ...ranked.sort((a, b) => descending ? b.score - a.score : a.score - b.score),
+    ...unranked.sort((a, b) => a.name.localeCompare(b.name)),
+  ];
+  chart.innerHTML = ordered.map((model, index) => {
+    const scored = typeof model.score === "number";
+    const total = dataset.method.benchmarkIds.length;
+    const got = measuredCount(model);
+    const rank = scored ? String(ranked.indexOf(model) + 1).padStart(2, "0") : "\u2014";
+    const bar = scored ? `data-width="${model.score}%"` : `data-width="0%"`
+    const score = scored ? model.score.toFixed(1) : "\u2014";
+    const note = scored
+      ? `mean · ${total} evals<br>snapshot ${model.snapshotAt}`
+      : `${got} of ${total} evals<br>not ranked`;
+    return `
+    <div class="chart-row${scored ? "" : " is-unranked"}" style="--model-color:${model.color}" role="listitem" tabindex="0" data-model="${model.id}" aria-label="${model.name}, ${scored ? "fleet score " + model.score : "not ranked"}">
       <div class="model-label">
-        <span class="rank">${String(index + 1).padStart(2, "0")}</span>
+        <span class="rank">${rank}</span>
         <span class="provider-mark">${providerIcon(model.mark)}</span>
         <span class="model-name">${model.name}<small class="provider">${model.provider}</small></span>
       </div>
-      <div class="bar-track"><div class="bar" data-width="${model.score}%"></div></div>
-      <div class="score-wrap"><div class="score">${model.score.toFixed(1)}</div><small>mean · 5 evals<br>snapshot ${model.snapshotAt}</small></div>
-    </div>
-  `).join("");
+      <div class="bar-track"><div class="bar" ${bar}></div></div>
+      <div class="score-wrap"><div class="score">${score}</div><small>${note}</small></div>
+    </div>`;
+  }).join("");
 
   requestAnimationFrame(() => {
     document.querySelectorAll(".bar").forEach((bar) => { bar.style.width = bar.dataset.width; });
@@ -43,8 +66,10 @@ function render() {
 }
 
 function renderSummary() {
-  const values = models.map((model) => model.score);
-  const leader = [...models].sort((a, b) => b.score - a.score)[0];
+  const ranked = models.filter((model) => typeof model.score === "number");
+  if (!ranked.length) return;
+  const values = ranked.map((model) => model.score);
+  const leader = [...ranked].sort((a, b) => b.score - a.score)[0];
   document.querySelector("#fleet-average").textContent = round(values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
   document.querySelector("#score-spread").textContent = `${round(Math.max(...values) - Math.min(...values)).toFixed(1)} points`;
   document.querySelector("#fleet-leader").textContent = `${leader.name} (${leader.score.toFixed(1)})`;
@@ -56,7 +81,8 @@ function openModel(id) {
   dialog.style.setProperty("--model-color", model.color);
   document.querySelector("#dialog-provider").innerHTML = `<span class="dialog-mark">${providerIcon(model.mark)}</span><span>${model.provider}<small>receipt ${dataset.datasetVersion}</small></span>`;
   document.querySelector("#dialog-title").textContent = model.fullName;
-  document.querySelector("#dialog-score").textContent = model.score.toFixed(1);
+  const scored = typeof model.score === "number";
+  document.querySelector("#dialog-score").textContent = scored ? model.score.toFixed(1) : "Not ranked";
   document.querySelector("#dialog-grid").innerHTML = `
     <div><span>Aggregation</span><strong>Equal mean</strong></div>
     <div><span>Weight / eval</span><strong>20%</strong></div>
@@ -70,16 +96,20 @@ function openModel(id) {
       const trials = benchmark.tasks && benchmark.repeatsPerTask
         ? benchmark.tasks * benchmark.repeatsPerTask
         : null;
-      const evidence = trials
-        ? `${Math.round(raw * trials)}/${trials} passes · ${benchmark.tasks} tasks × ${benchmark.repeatsPerTask}`
-        : benchmark.domain;
-      return `<a href="${benchmark.source}" target="_blank" rel="noreferrer">
+      const missing = typeof raw !== "number";
+      const evidence = missing
+        ? "not measured by Artificial Analysis for this model"
+        : trials
+          ? `${Math.round(raw * trials)}/${trials} passes · ${benchmark.tasks} tasks × ${benchmark.repeatsPerTask}`
+          : benchmark.domain;
+      return `<a href="${benchmark.source}" target="_blank" rel="noreferrer"${missing ? ' class="is-missing"' : ""}>
         <span><strong>${benchmark.name}</strong><small>${evidence}</small></span>
-        <span>${raw.toFixed(4)}</span>
-        <span>${(raw * 100).toFixed(1)}</span>
+        <span>${missing ? "\u2014" : raw.toFixed(4)}</span>
+        <span>${missing ? "\u2014" : (raw * 100).toFixed(1)}</span>
       </a>`;
     }).join("")}
-    <div class="receipt-total"><span>Arithmetic mean</span><span>${model.score.toFixed(1)}</span></div>
+    <div class="receipt-total"><span>Arithmetic mean</span><span>${typeof model.score === "number" ? model.score.toFixed(1) : "withheld"}</span></div>
+    ${model.unmeasured ? `<p class="receipt-note">${model.unmeasured}</p>` : ""}
   `;
   document.querySelector("#dialog-note").innerHTML = `Source snapshot: <a href="${model.source}" target="_blank" rel="noreferrer">Artificial Analysis</a>, retrieved ${dataset.retrievedAt}. Formula: Σ(normalized scores × 0.20).`;
   dialog.showModal();
@@ -122,7 +152,6 @@ async function initialize() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     dataset = await response.json();
     models = dataset.models.map((model) => ({ ...model, ...dataset.providers[model.provider], score: calculateScore(model) }));
-    if (models.some((model) => model.score === null)) throw new Error("Incomplete benchmark basket");
     renderSummary();
     render();
   } catch (error) {

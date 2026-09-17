@@ -1,33 +1,152 @@
 {
   "schemaVersion": 1,
-  "datasetVersion": "2026-08-23.1",
-  "retrievedAt": "2026-08-23",
+  "datasetVersion": "2026-09-16.1",
+  "retrievedAt": "2026-09-16",
   "method": {
     "name": "M4Y0U Fleet Score v1",
     "aggregation": "unweighted arithmetic mean",
     "missingData": "no score is published unless all five evaluations are present",
     "formula": "round(mean(normalized benchmark scores), 1)",
     "normalization": "All source values are proportions where higher is better; normalized score = raw value × 100.",
-    "benchmarkIds": ["terminalbench-v2.1", "scicode", "hle", "gpqa-diamond", "aa-lcr"]
+    "benchmarkIds": [
+      "terminalbench-v2.1",
+      "scicode",
+      "hle",
+      "gpqa-diamond",
+      "aa-lcr"
+    ],
+    "suiteChange": "Artificial Analysis moved to Intelligence Index v4.3 in September 2026, replacing Terminal-Bench 2.1 with Terminal-Bench 4.0 and removing GPQA Diamond. Models released after that change have no measurement for two of this index's five evaluations, so their aggregate is withheld and they are shown unranked. The basket itself is unchanged, which is what keeps the ranked models comparable."
   },
   "benchmarks": {
-    "terminalbench-v2.1": {"name": "Terminal-Bench v2.1", "domain": "Agentic coding & terminal use", "weight": 0.2, "tasks": 89, "repeatsPerTask": 3, "scoring": "pass@1 averaged over three repeats per task", "source": "https://artificialanalysis.ai/evaluations/terminalbench-v2-1"},
-    "scicode": {"name": "SciCode", "domain": "Scientific coding", "weight": 0.2, "source": "https://artificialanalysis.ai/evaluations/scicode"},
-    "hle": {"name": "Humanity's Last Exam", "domain": "Reasoning & knowledge", "weight": 0.2, "source": "https://artificialanalysis.ai/evaluations/humanitys-last-exam"},
-    "gpqa-diamond": {"name": "GPQA Diamond", "domain": "Scientific reasoning", "weight": 0.2, "source": "https://artificialanalysis.ai/evaluations/gpqa-diamond"},
-    "aa-lcr": {"name": "AA-LCR", "domain": "Long-context reasoning", "weight": 0.2, "source": "https://artificialanalysis.ai/evaluations/artificial-analysis-long-context-reasoning"}
+    "terminalbench-v2.1": {
+      "name": "Terminal-Bench v2.1",
+      "domain": "Agentic coding & terminal use",
+      "weight": 0.2,
+      "tasks": 89,
+      "repeatsPerTask": 3,
+      "scoring": "pass@1 averaged over three repeats per task",
+      "source": "https://artificialanalysis.ai/evaluations/terminalbench-v2-1"
+    },
+    "scicode": {
+      "name": "SciCode",
+      "domain": "Scientific coding",
+      "weight": 0.2,
+      "source": "https://artificialanalysis.ai/evaluations/scicode"
+    },
+    "hle": {
+      "name": "Humanity's Last Exam",
+      "domain": "Reasoning & knowledge",
+      "weight": 0.2,
+      "source": "https://artificialanalysis.ai/evaluations/humanitys-last-exam"
+    },
+    "gpqa-diamond": {
+      "name": "GPQA Diamond",
+      "domain": "Scientific reasoning",
+      "weight": 0.2,
+      "source": "https://artificialanalysis.ai/evaluations/gpqa-diamond"
+    },
+    "aa-lcr": {
+      "name": "AA-LCR",
+      "domain": "Long-context reasoning",
+      "weight": 0.2,
+      "source": "https://artificialanalysis.ai/evaluations/artificial-analysis-long-context-reasoning"
+    }
   },
   "providers": {
-    "DeepSeek": {"color": "#6178ff", "mark": "deepseek"},
-    "Z AI": {"color": "#ff6b4a", "mark": "zai"},
-    "Moonshot AI": {"color": "#1688ff", "mark": "kimi"},
-    "OpenAI": {"color": "#66d6b4", "mark": "openai"}
+    "DeepSeek": {
+      "color": "#6178ff",
+      "mark": "deepseek"
+    },
+    "Z AI": {
+      "color": "#ff6b4a",
+      "mark": "zai"
+    },
+    "Moonshot AI": {
+      "color": "#1688ff",
+      "mark": "kimi"
+    },
+    "OpenAI": {
+      "color": "#66d6b4",
+      "mark": "openai"
+    }
   },
   "models": [
-    {"id": "deepseek-v4-pro", "name": "DeepSeek V4 Pro", "fullName": "DeepSeek V4 Pro 0813 (max)", "provider": "DeepSeek", "openness": "Open weights", "reasoning": "Max", "context": "1M", "release": "Aug 2026", "source": "https://artificialanalysis.ai/models/deepseek-v4-pro", "snapshotAt": "2026-08-23", "scores": {"terminalbench-v2.1": 0.786516853932584, "scicode": 0.491898148148148, "hle": 0.410101946246525, "gpqa-diamond": 0.928282828282828, "aa-lcr": 0.753333333333333}},
-    {"id": "deepseek-v4-flash", "name": "DeepSeek V4 Flash", "fullName": "DeepSeek V4 Flash 0731 (max)", "provider": "DeepSeek", "openness": "Open weights", "reasoning": "Max", "context": "1M", "release": "Jul 2026", "source": "https://artificialanalysis.ai/models/deepseek-v4-flash/", "snapshotAt": "2026-08-23", "scores": {"terminalbench-v2.1": 0.786516853932584, "scicode": 0.498842592592593, "hle": 0.385542168674699, "gpqa-diamond": 0.908080808080808, "aa-lcr": 0.743333333333333}},
-    {"id": "glm-5-3", "name": "GLM 5.3", "fullName": "GLM-5.3 (max)", "provider": "Z AI", "openness": "Proprietary", "reasoning": "Max", "context": "1M", "release": "Aug 2026", "source": "https://artificialanalysis.ai/models/glm-5-3", "snapshotAt": "2026-08-23", "scores": {"terminalbench-v2.1": 0.838951310861423, "scicode": 0.564814814814815, "hle": 0.422613531047266, "gpqa-diamond": 0.917171717171717, "aa-lcr": 0.763333333333333}},
-    {"id": "kimi-k3", "name": "Kimi K3", "fullName": "Kimi K3 (max)", "provider": "Moonshot AI", "openness": "Open weights", "reasoning": "Max", "context": "1.05M", "release": "Jul 2026", "source": "https://artificialanalysis.ai/models/kimi-k3", "snapshotAt": "2026-08-23", "scores": {"terminalbench-v2.1": 0.850187265917603, "scicode": 0.586805555555556, "hle": 0.468952734012975, "gpqa-diamond": 0.935353535353535, "aa-lcr": 0.826666666666667}},
-    {"id": "gpt-5-6-sol", "name": "GPT 5.6 Sol", "fullName": "GPT-5.6 Sol (max)", "provider": "OpenAI", "openness": "Proprietary", "reasoning": "Max", "context": "1M", "release": "Jul 2026", "source": "https://artificialanalysis.ai/models/gpt-5-6-sol", "snapshotAt": "2026-08-23", "scores": {"terminalbench-v2.1": 0.880149812734082, "scicode": 0.561342592592593, "hle": 0.494902687673772, "gpqa-diamond": 0.941414141414141, "aa-lcr": 0.776666666666667}}
+    {
+      "id": "deepseek-v4-1-flash",
+      "name": "DeepSeek V4.1 Flash",
+      "fullName": "DeepSeek V4.1 Flash (max)",
+      "provider": "DeepSeek",
+      "openness": "Open weights",
+      "reasoning": "Max",
+      "context": "1M",
+      "release": "Sep 2026",
+      "source": "https://artificialanalysis.ai/models/deepseek-v4-1-flash",
+      "snapshotAt": "2026-09-16",
+      "unmeasured": "Artificial Analysis retired Terminal-Bench 2.1 and GPQA Diamond from its evaluation suite before measuring this model, so the five-evaluation basket cannot be completed and the aggregate is withheld by the index's own rule.",
+      "scores": {
+        "terminalbench-v2.1": null,
+        "scicode": 0.518518518518518,
+        "hle": 0.392493049119555,
+        "gpqa-diamond": null,
+        "aa-lcr": 0.84
+      }
+    },
+    {
+      "id": "glm-5-3",
+      "name": "GLM 5.3",
+      "fullName": "GLM-5.3 (max)",
+      "provider": "Z AI",
+      "openness": "Proprietary",
+      "reasoning": "Max",
+      "context": "1M",
+      "release": "Aug 2026",
+      "source": "https://artificialanalysis.ai/models/glm-5-3",
+      "snapshotAt": "2026-08-23",
+      "scores": {
+        "terminalbench-v2.1": 0.838951310861423,
+        "scicode": 0.564814814814815,
+        "hle": 0.422613531047266,
+        "gpqa-diamond": 0.917171717171717,
+        "aa-lcr": 0.763333333333333
+      }
+    },
+    {
+      "id": "kimi-k3",
+      "name": "Kimi K3",
+      "fullName": "Kimi K3 (max)",
+      "provider": "Moonshot AI",
+      "openness": "Open weights",
+      "reasoning": "Max",
+      "context": "1.05M",
+      "release": "Jul 2026",
+      "source": "https://artificialanalysis.ai/models/kimi-k3",
+      "snapshotAt": "2026-08-23",
+      "scores": {
+        "terminalbench-v2.1": 0.850187265917603,
+        "scicode": 0.586805555555556,
+        "hle": 0.468952734012975,
+        "gpqa-diamond": 0.935353535353535,
+        "aa-lcr": 0.826666666666667
+      }
+    },
+    {
+      "id": "gpt-5-6-sol",
+      "name": "GPT 5.6 Sol",
+      "fullName": "GPT-5.6 Sol (max)",
+      "provider": "OpenAI",
+      "openness": "Proprietary",
+      "reasoning": "Max",
+      "context": "1M",
+      "release": "Jul 2026",
+      "source": "https://artificialanalysis.ai/models/gpt-5-6-sol",
+      "snapshotAt": "2026-08-23",
+      "scores": {
+        "terminalbench-v2.1": 0.880149812734082,
+        "scicode": 0.561342592592593,
+        "hle": 0.494902687673772,
+        "gpqa-diamond": 0.941414141414141,
+        "aa-lcr": 0.776666666666667
+      }
+    }
   ]
 }
