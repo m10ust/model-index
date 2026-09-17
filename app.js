@@ -75,21 +75,25 @@ function render() {
       ? (value ? (value / maxValue) * 100 : 0)
       : (scored ? model.score : 0);
     const bar = `data-width="${width}%"`;
-    const score = scored ? model.score.toFixed(1) : "\u2014";
+    // The headline number is whatever the active view ranks by. A value view that
+    // shows the capability score as its big number is answering the other question.
+    const headline = byValue && value !== null
+      ? String(Math.round(value))
+      : (scored ? model.score.toFixed(1) : "\u2014");
     const note = !scored
       ? `${got} of ${total} evals<br>not ranked`
       : byValue
-        ? `${value ? Math.round(value) + " pts per $" : "no price listed"}<br>${price ? money(price) + "/M blended" : ""}`
+        ? `points per dollar<br>score ${model.score.toFixed(1)}${price ? " · " + money(price) + "/M" : ""}`
         : `mean · ${total} evals<br>${price ? money(price) + "/M blended" : "price not listed"}`;
     return `
-    <div class="chart-row${scored ? "" : " is-unranked"}" style="--model-color:${model.color}" role="listitem" tabindex="0" data-model="${model.id}" aria-label="${model.name}, ${scored ? "fleet score " + model.score : "not ranked"}">
+    <div class="chart-row${scored ? "" : " is-unranked"}" style="--model-color:${model.color}" role="listitem" tabindex="0" data-model="${model.id}" aria-label="${model.name}, ${!scored ? "not ranked" : byValue && value !== null ? Math.round(value) + " points per dollar, fleet score " + model.score : "fleet score " + model.score}">
       <div class="model-label">
         <span class="rank">${rank}</span>
         <span class="provider-mark">${providerIcon(model.mark)}</span>
         <span class="model-name">${model.name}<small class="provider">${model.provider}</small></span>
       </div>
       <div class="bar-track"><div class="bar" ${bar}></div></div>
-      <div class="score-wrap"><div class="score">${score}</div><small>${note}</small></div>
+      <div class="score-wrap"><div class="score">${headline}</div><small>${note}</small></div>
     </div>`;
   }).join("");
 
