@@ -1,31 +1,52 @@
 {
   "schemaVersion": 1,
-  "datasetVersion": "2026-09-16.1",
+  "datasetVersion": "2026-09-16.2",
   "retrievedAt": "2026-09-16",
   "method": {
-    "name": "M4Y0U Fleet Score v1",
+    "name": "M4Y0U Fleet Score v2",
     "aggregation": "unweighted arithmetic mean",
     "missingData": "no score is published unless all five evaluations are present",
     "formula": "round(mean(normalized benchmark scores), 1)",
     "normalization": "All source values are proportions where higher is better; normalized score = raw value × 100.",
     "benchmarkIds": [
-      "terminalbench-v2.1",
+      "terminalbench-v4.0",
       "scicode",
       "hle",
-      "gpqa-diamond",
+      "critpt",
       "aa-lcr"
     ],
-    "suiteChange": "Artificial Analysis moved to Intelligence Index v4.3 in September 2026, replacing Terminal-Bench 2.1 with Terminal-Bench 4.0 and removing GPQA Diamond. Models released after that change have no measurement for two of this index's five evaluations, so their aggregate is withheld and they are shown unranked. The basket itself is unchanged, which is what keeps the ranked models comparable."
+    "basketHistory": {
+      "v1": {
+        "retrievedAt": "2026-08-23",
+        "benchmarkIds": [
+          "terminalbench-v2.1",
+          "scicode",
+          "hle",
+          "gpqa-diamond",
+          "aa-lcr"
+        ],
+        "retiredBecause": "Artificial Analysis moved to Intelligence Index v4.3 in September 2026, replacing Terminal-Bench 2.1 with Terminal-Bench 4.0 and removing GPQA Diamond. The v1 evaluations are no longer run, so the basket could not be extended to newer models."
+      },
+      "v2": {
+        "retrievedAt": "2026-09-16",
+        "benchmarkIds": [
+          "terminalbench-v4.0",
+          "scicode",
+          "hle",
+          "critpt",
+          "aa-lcr"
+        ],
+        "equalWeight": "The five axes are unchanged in intent: agentic coding, scientific coding, reasoning and knowledge, physics reasoning, long-context reasoning. GPQA Diamond's slot is taken by CritPt."
+      }
+    }
   },
   "benchmarks": {
-    "terminalbench-v2.1": {
-      "name": "Terminal-Bench v2.1",
+    "terminalbench-v4.0": {
+      "name": "Terminal-Bench 4.0",
       "domain": "Agentic coding & terminal use",
       "weight": 0.2,
-      "tasks": 89,
-      "repeatsPerTask": 3,
-      "scoring": "pass@1 averaged over three repeats per task",
-      "source": "https://artificialanalysis.ai/evaluations/terminalbench-v2-1"
+      "source": "https://artificialanalysis.ai/evaluations/terminalbench-v4-0",
+      "note": "Artificial Analysis does not publish the task count for this evaluation, so the receipt shows the domain rather than a pass fraction."
     },
     "scicode": {
       "name": "SciCode",
@@ -39,14 +60,14 @@
       "weight": 0.2,
       "source": "https://artificialanalysis.ai/evaluations/humanitys-last-exam"
     },
-    "gpqa-diamond": {
-      "name": "GPQA Diamond",
-      "domain": "Scientific reasoning",
+    "critpt": {
+      "name": "CritPt",
+      "domain": "Physics reasoning",
       "weight": 0.2,
-      "source": "https://artificialanalysis.ai/evaluations/gpqa-diamond"
+      "source": "https://artificialanalysis.ai/evaluations/critpt"
     },
     "aa-lcr": {
-      "name": "AA-LCR",
+      "name": "AA-LCR v1.1",
       "domain": "Long-context reasoning",
       "weight": 0.2,
       "source": "https://artificialanalysis.ai/evaluations/artificial-analysis-long-context-reasoning"
@@ -72,22 +93,21 @@
   },
   "models": [
     {
-      "id": "deepseek-v4-1-flash",
-      "name": "DeepSeek V4.1 Flash",
-      "fullName": "DeepSeek V4.1 Flash (max)",
-      "provider": "DeepSeek",
-      "openness": "Open weights",
+      "id": "gpt-5-6-sol",
+      "name": "GPT 5.6 Sol",
+      "fullName": "GPT-5.6 Sol (max)",
+      "provider": "OpenAI",
+      "openness": "Proprietary",
       "reasoning": "Max",
       "context": "1M",
-      "release": "Sep 2026",
-      "source": "https://artificialanalysis.ai/models/deepseek-v4-1-flash",
+      "release": "Jul 2026",
+      "source": "https://artificialanalysis.ai/models/gpt-5-6-sol",
       "snapshotAt": "2026-09-16",
-      "unmeasured": "Artificial Analysis retired Terminal-Bench 2.1 and GPQA Diamond from its evaluation suite before measuring this model, so the five-evaluation basket cannot be completed and the aggregate is withheld by the index's own rule.",
       "scores": {
-        "terminalbench-v2.1": null,
-        "scicode": 0.518518518518518,
-        "hle": 0.392493049119555,
-        "gpqa-diamond": null,
+        "terminalbench-v4.0": 0.398989898989899,
+        "scicode": 0.570601851851852,
+        "hle": 0.494902687673772,
+        "critpt": 0.322857142857143,
         "aa-lcr": 0.84
       }
     },
@@ -101,13 +121,13 @@
       "context": "1M",
       "release": "Aug 2026",
       "source": "https://artificialanalysis.ai/models/glm-5-3",
-      "snapshotAt": "2026-08-23",
+      "snapshotAt": "2026-09-16",
       "scores": {
-        "terminalbench-v2.1": 0.838951310861423,
-        "scicode": 0.564814814814815,
+        "terminalbench-v4.0": 0.419191919191919,
+        "scicode": 0.590277777777778,
         "hle": 0.422613531047266,
-        "gpqa-diamond": 0.917171717171717,
-        "aa-lcr": 0.763333333333333
+        "critpt": 0.191428571428571,
+        "aa-lcr": 0.796666666666667
       }
     },
     {
@@ -120,32 +140,32 @@
       "context": "1.05M",
       "release": "Jul 2026",
       "source": "https://artificialanalysis.ai/models/kimi-k3",
-      "snapshotAt": "2026-08-23",
+      "snapshotAt": "2026-09-16",
       "scores": {
-        "terminalbench-v2.1": 0.850187265917603,
-        "scicode": 0.586805555555556,
+        "terminalbench-v4.0": 0.126262626262626,
+        "scicode": 0.594907407407407,
         "hle": 0.468952734012975,
-        "gpqa-diamond": 0.935353535353535,
-        "aa-lcr": 0.826666666666667
+        "critpt": 0.234285714285714,
+        "aa-lcr": 0.886666666666667
       }
     },
     {
-      "id": "gpt-5-6-sol",
-      "name": "GPT 5.6 Sol",
-      "fullName": "GPT-5.6 Sol (max)",
-      "provider": "OpenAI",
-      "openness": "Proprietary",
+      "id": "deepseek-v4-1-flash",
+      "name": "DeepSeek V4.1 Flash",
+      "fullName": "DeepSeek V4.1 Flash (max)",
+      "provider": "DeepSeek",
+      "openness": "Open weights",
       "reasoning": "Max",
       "context": "1M",
-      "release": "Jul 2026",
-      "source": "https://artificialanalysis.ai/models/gpt-5-6-sol",
-      "snapshotAt": "2026-08-23",
+      "release": "Sep 2026",
+      "source": "https://artificialanalysis.ai/models/deepseek-v4-1-flash",
+      "snapshotAt": "2026-09-16",
       "scores": {
-        "terminalbench-v2.1": 0.880149812734082,
-        "scicode": 0.561342592592593,
-        "hle": 0.494902687673772,
-        "gpqa-diamond": 0.941414141414141,
-        "aa-lcr": 0.776666666666667
+        "terminalbench-v4.0": 0.267676767676768,
+        "scicode": 0.518518518518518,
+        "hle": 0.392493049119555,
+        "critpt": 0.142857142857143,
+        "aa-lcr": 0.84
       }
     }
   ]

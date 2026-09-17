@@ -27,11 +27,11 @@
     <section class="hero">
       <div class="eyebrow"><span></span> Personal intelligence leaderboard</div>
       <h1>The models behind<br><em>my work.</em></h1>
-      <p class="lede">A focused view of the five AI systems in my daily stack—five independent evaluations reduced to one auditable fleet score.</p>
+      <p class="lede">A focused view of the four AI systems in my daily stack, five independent evaluations reduced to one auditable fleet score.</p>
       <div class="hero-meta">
-        <div><strong>5</strong><span>models tracked</span></div>
+        <div><strong>4</strong><span>models tracked</span></div>
         <div><strong id="fleet-average">—</strong><span>average fleet score</span></div>
-        <div><strong>Aug ’26</strong><span>latest release</span></div>
+        <div><strong>Sep ’26</strong><span>latest release</span></div>
       </div>
     </section>
 
@@ -41,7 +41,7 @@
           <div class="eyebrow"><span></span> Fleet score</div>
           <h2 id="leaderboard-title">One number. Clear signal.</h2>
         </div>
-        <p>Higher is better · M4Y0U Fleet Score v1</p>
+        <p>Higher is better · M4Y0U Fleet Score v2</p>
       </div>
 
       <div class="controls" aria-label="Chart controls">
@@ -72,7 +72,7 @@
       </article>
       <article>
         <span class="insight-number">03</span>
-        <p><strong>Open weights</strong> account for three of the five tracked models.</p>
+        <p><strong>Open weights</strong> account for two of the four tracked models.</p>
       </article>
     </section>
 
@@ -82,7 +82,8 @@
         <h2>Complex benchmarks,<br>made legible.</h2>
       </div>
       <div class="method-copy">
-        <p>The displayed Fleet Score uses exactly five independently run evaluations: Terminal-Bench v2.1, SciCode, Humanity’s Last Exam, GPQA Diamond and AA-LCR.</p>
+        <p>The displayed Fleet Score uses exactly five independently run evaluations: Terminal-Bench 4.0, SciCode, Humanity’s Last Exam, CritPt and AA-LCR.</p>
+        <p>The basket was revised in September 2026. Artificial Analysis retired Terminal-Bench 2.1 and removed GPQA Diamond from its suite, so both stop being measured for any newly released model. Terminal-Bench 4.0 and CritPt take their places; the revision and the reason are recorded in the dataset.</p>
         <p>Every raw result is a proportion. It is normalized to 0–100 by multiplying by 100, then the five normalized results receive equal 20% weight. Missing one benchmark means no aggregate is published.</p>
         <p>The versioned snapshot lives in <code>data/benchmarks.json</code>. Updates are deliberate and reviewable; the dashboard never silently pulls new values.</p>
         <div class="formula">

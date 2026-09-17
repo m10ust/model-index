@@ -102,6 +102,14 @@ h1 em { font-family: Georgia, serif; font-weight: 400; }
 .chart { position: relative; }
 .chart-row { display: grid; grid-template-columns: 255px 1fr 78px; align-items: center; gap: 25px; min-height: 105px; border-top: 1px solid color-mix(in srgb, var(--paper) 15%, transparent); cursor: pointer; }
 .chart-row:last-child { border-bottom: 1px solid color-mix(in srgb, var(--paper) 15%, transparent); }
+/* A model whose basket cannot be completed is shown rather than fatal: the score
+   is withheld and it sits below the ranked rows. See README, Suite change. */
+.chart-row.is-unranked { opacity: 0.6; }
+.chart-row.is-unranked:hover { opacity: 0.85; }
+.chart-row.is-unranked .rank { font-style: normal; }
+.receipt a.is-missing { opacity: 0.55; }
+.receipt a.is-missing small { font-style: italic; }
+.receipt-note { margin: 14px 0 0; color: var(--muted); font: italic 13px/1.5 Georgia, serif; }
 .chart-row:hover .model-name { color: var(--model-color); transform: translateX(5px); }
 .model-label { display: flex; align-items: center; gap: 14px; }
 .rank { width: 22px; color: var(--muted); font: italic 14px Georgia, serif; }
